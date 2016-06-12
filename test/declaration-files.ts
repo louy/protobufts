@@ -4,9 +4,15 @@ import {protoStringToTsDeclaration} from '../index';
 
 const dir = `${__dirname}/../test-files`;
 
+function split(filename: string) {
+  var i = filename.lastIndexOf('.');
+  if (i === -1) return [filename];
+  return [filename.substr(0, i), filename.substr(i + 1)];
+}
+
 describe('#protoStringToTsDeclaration', () => {
   for (const file of readdirSync(dir)) {
-    const [basename, ext] = file.split('.', 2);
+    const [basename, ext] = split(file);
 
     if (ext !== 'proto') continue;
 
@@ -15,8 +21,7 @@ describe('#protoStringToTsDeclaration', () => {
         readFileSync(
           `${dir}/${basename}.proto`,
           'utf8'
-        ),
-        `${dir}/${basename}.proto`
+        )
       );
       const expected = readFileSync(
         `${dir}/${basename}.d.ts`,

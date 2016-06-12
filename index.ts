@@ -1,18 +1,38 @@
 import * as ProtoBuf from 'protobufjs';
 
-export function protoStringToTsDeclaration(proto: string, filename?: string): string {
-  // const builder = ProtoBuf.loadProto(proto, null, filename);
-  const json: ProtoBuf.MetaProto = (ProtoBuf.DotProto.Parser.parse as any)(proto);
+export function protoStringToTsDeclaration(proto: string): string {
+  const json = protoStringToJson(proto);
+  return protoJsonToTsDeclaration(json);
+}
 
+function protoJsonToTsDeclaration(proto: ProtoBuf.MetaProto): string {
   let ts = '';
 
-  ts += json.messages.map(message => messageToTs(message, json)).join('\n');
+  ts += proto.messages.map(message => messageToTs(message, proto)).join('\n');
 
-  if (json.package) {
-    ts = `export namespace ${json.package} {\n${indent(ts, 2)}}\n`;
+  if (proto.package) {
+    ts = `export namespace ${proto.package} {\n${indent(ts, 2)}}\n`;
   }
 
   return ts;
+}
+
+export function protoStringToTs(proto: string): string {
+  const json = protoStringToJson(proto);
+  const declaration = protoJsonToTsDeclaration(json);
+
+  return `${declaration}
+export const json = ${JSON.stringify(json)};
+import Protobuf = require('protobufjs');
+export default Protobuf.newBuilder({
+  convertFieldsToCamelCase: true,
+  populateAccessors: false,
+})['import'](json);
+`;
+}
+
+export function protoStringToJson(proto: string): ProtoBuf.MetaProto {
+  return (ProtoBuf.DotProto.Parser.parse as any)(proto);
 }
 
 function messageToTs(message: ProtoBuf.ProtoMessage, parent) {
