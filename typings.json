@@ -1,4 +1,14 @@
 {
   "name": "protobufts",
-  "dependencies": {}
+  "dependencies": {},
+  "globalDevDependencies": {
+    "mocha": "registry:env/mocha#2.2.5+20160321223601",
+    "node": "registry:env/node#6.0.0+20160610031852"
+  },
+  "devDependencies": {
+    "chai": "registry:npm/chai#3.5.0+20160415060238"
+  },
+  "globalDependencies": {
+    "protobufjs": "registry:dt/protobufjs#0.0.0+20160317120654"
+  }
 }
