@@ -66,27 +66,40 @@ function fieldToTs(field: ProtoBuf.ProtoField, message: ProtoBuf.ProtoMessage, p
       type = 'string';
       break;
     default: {
+      const typeParts = field.type.split('.');
+      const lastPart = typeParts.splice(typeParts.length - 1, 1)[0];
+      const parentTypeMessage = typeParts
+        .reduce((message, part) => {
+          if (!message) return message;
+          return message.messages.filter(message => message.name === part)[0];
+        }, parent);
+      const typeMessage = typeParts
+        .reduce((message, part) => {
+          if (!message) return message;
+          return message.messages.filter(message => message.name === part)[0];
+        }, message);
+
       if (
-        message && (
-          (message.enums as any[])
-            .filter(eNum => eNum.name === field.type)
+        typeMessage && (
+          (typeMessage.enums as any[])
+            .filter(eNum => eNum.name === lastPart)
             .length
           ||
-          (message.messages as any[])
-            .filter(message => message.name === field.type)
+          (typeMessage.messages as any[])
+            .filter(message => message.name === lastPart)
             .length
         )
       ) {
         type = `${message.name}.${field.type}`;
         break;
       } else if (
-        parent && (
-          (parent.enums as any[])
-            .filter(eNum => eNum.name === field.type)
+        parentTypeMessage && (
+          (parentTypeMessage.enums as any[])
+            .filter(eNum => eNum.name === lastPart)
             .length
           ||
-          (parent.messages as any[])
-            .filter(message => message.name === field.type)
+          (parentTypeMessage.messages as any[])
+            .filter(message => message.name === lastPart)
             .length
         )
       ) {
