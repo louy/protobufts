@@ -6,6 +6,7 @@
   "scripts": {
     "postinstall": "typings install && typings prune",
     "build": "tsc -p .",
+    "build-deploy": "npm run build -- --declaration",
     "watch": "tsc -w -p .",
     "test": "mocha"
   },
