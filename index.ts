@@ -2,6 +2,7 @@ import * as ProtoBuf from 'protobufjs';
 
 export function protoStringToTsDeclaration(proto: string): string {
   const json = protoStringToJson(proto);
+  // FIXME - support imports
   return protoJsonToTsDeclaration(json);
 }
 
